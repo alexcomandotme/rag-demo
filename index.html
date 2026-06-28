@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RAG Knowledge Base — alexcoman.me</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #0e0e0e;
+  --surface: #161616;
+  --border: rgba(255,255,255,0.08);
+  --text: rgba(255,255,255,0.75);
+  --dim: rgba(255,255,255,0.3);
+  --green: #5DCAA5;
+  --blue: #5B9BD5;
+  --orange: #E8A87C;
+  --purple: #A78BD4;
+  --yellow: #E8D57C;
+  --mono: 'JetBrains Mono', monospace;
+}
+
+html, body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--mono);
+  min-height: 100vh;
+}
+
+body {
+  padding: 3rem 2rem;
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.breadcrumb {
+  font-size: 11px;
+  color: var(--dim);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 2rem;
+}
+
+.breadcrumb a { color: var(--dim); text-decoration: none; }
+.breadcrumb a:hover { color: var(--text); }
+
+.tag {
+  display: inline-block;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--green);
+  border: 1px solid rgba(93,202,165,0.3);
+  padding: 3px 8px;
+  margin-bottom: 1.5rem;
+}
+
+h1 {
+  font-size: clamp(22px, 4vw, 30px);
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 3rem;
+}
+
+/* PROBLEM / SOLUTION */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--border);
+  margin-bottom: 3.5rem;
+  border: 1px solid var(--border);
+}
+
+.col-block {
+  background: var(--surface);
+  padding: 1.75rem;
+}
+
+.col-label {
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+  display: block;
+}
+
+.col-label.problem { color: var(--orange); }
+.col-label.solution { color: var(--green); }
+
+.col-block p {
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--text);
+}
+
+/* PIPELINE + STACK */
+.section-label {
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--dim);
+  margin-bottom: 1.5rem;
+}
+
+.pipeline-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  margin-bottom: 3rem;
+}
+
+.pipeline-row {
+  display: grid;
+  grid-template-columns: 28px 160px 1fr;
+  align-items: center;
+  background: var(--surface);
+  transition: background 0.15s;
+  cursor: default;
+}
+
+.pipeline-row:hover {
+  background: #1c1c1c;
+}
+
+.step-num {
+  font-size: 10px;
+  color: var(--dim);
+  text-align: center;
+  padding: 1.25rem 0;
+  border-right: 1px solid var(--border);
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.step-main {
+  padding: 1.25rem 1.5rem;
+  border-right: 1px solid var(--border);
+}
+
+.step-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  display: block;
+  margin-bottom: 3px;
+}
+
+.step-tech {
+  font-size: 11px;
+  display: block;
+}
+
+.step-desc {
+  padding: 1.25rem 1.5rem;
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--dim);
+}
+
+/* color per step */
+.row-1 .step-tech { color: var(--orange); }
+.row-2 .step-tech { color: var(--blue); }
+.row-3 .step-tech { color: var(--purple); }
+.row-4 .step-tech { color: var(--green); }
+.row-5 .step-tech { color: var(--yellow); }
+.row-6 .step-tech { color: var(--green); }
+
+.row-1:hover .step-num { color: var(--orange); }
+.row-2:hover .step-num { color: var(--blue); }
+.row-3:hover .step-num { color: var(--purple); }
+.row-4:hover .step-num { color: var(--green); }
+.row-5:hover .step-num { color: var(--yellow); }
+.row-6:hover .step-num { color: var(--green); }
+
+/* GITHUB LINK */
+.github-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--green);
+  border: 1px solid rgba(93,202,165,0.3);
+  padding: 10px 20px;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+.github-link:hover { background: rgba(93,202,165,0.08); }
+
+.footer {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.footer-left { font-size: 11px; color: var(--dim); }
+
+@media (max-width: 640px) {
+  body { padding: 2rem 1.25rem; }
+  .two-col { grid-template-columns: 1fr; }
+  .pipeline-row { grid-template-columns: 24px 1fr; }
+  .step-desc { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="tag">Prototype · 2025</div>
+<h1>RAG Knowledge Base</h1>
+
+<div class="two-col">
+  <div class="col-block">
+    <span class="col-label problem">Problem</span>
+    <p>Organizations store years of knowledge in wikis, PDFs, and internal tools. When someone needs an answer, they search manually, ask a colleague, or give up. The knowledge exists. It's just not accessible.</p>
+  </div>
+  <div class="col-block">
+    <span class="col-label solution">Solution</span>
+    <p>A pipeline that indexes any document collection and makes it queryable in plain language. Ask a question, get a precise answer with the source it came from. No search, no digging.</p>
+  </div>
+</div>
+
+<div class="section-label">how it works</div>
+
+<div class="pipeline-stack">
+  <div class="pipeline-row row-1">
+    <div class="step-num">01</div>
+    <div class="step-main">
+      <span class="step-name">Documents</span>
+      <span class="step-tech">any format</span>
+    </div>
+    <div class="step-desc">Drop .md, .txt, or .pdf files into the data/ folder. The pipeline is document-agnostic — wikis, contracts, specs, HR policies, anything.</div>
+  </div>
+  <div class="pipeline-row row-2">
+    <div class="step-num">02</div>
+    <div class="step-main">
+      <span class="step-name">Indexing</span>
+      <span class="step-tech">LlamaIndex</span>
+    </div>
+    <div class="step-desc">LlamaIndex chunks documents and builds a retrieval index. Runs once on ingest — no re-indexing unless documents change.</div>
+  </div>
+  <div class="pipeline-row row-3">
+    <div class="step-num">03</div>
+    <div class="step-main">
+      <span class="step-name">Vector Storage</span>
+      <span class="step-tech">ChromaDB + HuggingFace</span>
+    </div>
+    <div class="step-desc">HuggingFace embeddings stored locally in ChromaDB. Persistent across sessions. No API cost for embedding.</div>
+  </div>
+  <div class="pipeline-row row-4">
+    <div class="step-num">04</div>
+    <div class="step-main">
+      <span class="step-name">API Endpoint</span>
+      <span class="step-tech">FastAPI</span>
+    </div>
+    <div class="step-desc">REST endpoint accepts natural language questions. Retrieves the most relevant document chunks before passing to the LLM.</div>
+  </div>
+  <div class="pipeline-row row-5">
+    <div class="step-num">05</div>
+    <div class="step-main">
+      <span class="step-name">LLM Inference</span>
+      <span class="step-tech">Groq · Llama 3.3-70b</span>
+    </div>
+    <div class="step-desc">Groq for speed. Llama 3.3-70b synthesizes retrieved context into a precise answer. Free tier sufficient for PoC.</div>
+  </div>
+  <div class="pipeline-row row-6">
+    <div class="step-num">06</div>
+    <div class="step-main">
+      <span class="step-name">Answer + Source</span>
+      <span class="step-tech">traceable output</span>
+    </div>
+    <div class="step-desc">Returns the answer plus the source document chunks it drew from. Traceable, verifiable — not a black box.</div>
+  </div>
+</div>
+
+<div class="footer">
+  <div class="footer-left">built in under a day. deployable as internal tool or client PoC.</div>
+</div>
+
+</body>
+</html>
